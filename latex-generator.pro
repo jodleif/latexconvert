@@ -12,11 +12,13 @@ TARGET = latex-generator
 TEMPLATE = app
 CONFIG += c++14
 
-QMAKE_CXXFLAGS_DEBUG += -Weverything -Wno-c++98-compat
+QMAKE_CXXFLAGS_DEBUG += -Weverything -Wno-c++98-compat -march=native -mtune=native
 
 SOURCES += main.cpp\
-        latexconvert.cpp
+        latexconvert.cpp \
+    tablemodel.cpp
 
-HEADERS  += latexconvert.h
+HEADERS  += latexconvert.h \
+    tablemodel.h
 
 FORMS    += latexconvert.ui
