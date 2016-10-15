@@ -1,8 +1,8 @@
 #ifndef LATEXCONVERT_H
 #define LATEXCONVERT_H
 
-#include "model/tablemodel.h"
 #include <QMainWindow>
+#include <QStandardItemModel>
 #include <QTableView>
 #include <memory>
 
@@ -36,7 +36,7 @@ private:
                           QVector<QVector<QString>>&& grid_data);
   Ui::LatexConvert* ui;
   QTableView* tableview;
-  std::unique_ptr<TableModel> tableptr;
+  QStandardItemModel* itemmodel;
 };
 
 #endif // LATEXCONVERT_H

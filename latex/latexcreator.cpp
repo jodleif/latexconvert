@@ -51,11 +51,12 @@ latex::create_latex_from_grid_data(const QVector<QVector<QString>>& grid_data,
   latex_output.push_back(generate_table_header(config));
   auto process_row = [&](const QVector<QString>& columns) {
     QString table_row;
-    std::for_each(columns.begin(), columns.end(),
+    std::for_each(columns.begin(), columns.end() - 1,
                   [&table_row](const auto& cell) {
-                    table_row.append(QString("& %1").arg(cell));
+                    table_row.append(QString("%1 &").arg(cell));
                   });
-    table_row.append("\\");
+    table_row.append(QString("%1 ").arg(columns.last()));
+    table_row.append("\\\\");
     return table_row;
   };
 
@@ -65,4 +66,16 @@ latex::create_latex_from_grid_data(const QVector<QVector<QString>>& grid_data,
   latex_output.push_back(QString(end_tabular));
   latex_output.push_back(QString(end_table));
   return latex_output;
+}
+
+QString
+latex::flatten_latex(const QVector<QString>& generated_latex)
+{
+  QString res;
+  std::for_each(generated_latex.begin(), generated_latex.end(),
+                [&res](const auto& line) {
+                  res.append(line);
+                  res.append('\n');
+                });
+  return res;
 }

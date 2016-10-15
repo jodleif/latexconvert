@@ -16,12 +16,10 @@ QMAKE_CXXFLAGS_DEBUG += -Weverything -Wno-c++98-compat -march=native -mtune=nati
 
 SOURCES += main.cpp\
         latexconvert.cpp \
-    model/tablemodel.cpp \
     latex/latexcreator.cpp \
     model/configoptions.cpp
 
 HEADERS  += \
-    model/tablemodel.h \
     latex/latexcreator.h \
     latexconvert.h \
     model/configoptions.h
