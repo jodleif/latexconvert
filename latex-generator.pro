@@ -13,6 +13,9 @@ TEMPLATE = app
 CONFIG += c++14
 
 QMAKE_CXXFLAGS_DEBUG += -Weverything -Wno-c++98-compat -march=native -mtune=native
+CONFIG(release, debug|release) {
+DEFINES += QT_NO_DEBUG_OUTPUT
+}
 
 SOURCES += main.cpp\
         latexconvert.cpp \
