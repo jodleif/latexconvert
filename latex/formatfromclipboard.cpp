@@ -28,6 +28,18 @@ generate_table_data(const QMimeData* mimedata)
     }
   }
 
+  if (data.size() > 0) {
+    int initial_size = data[0].size();
+    bool same_size{ true };
+    std::for_each(data.begin() + 1, data.end(),
+                  [&same_size, initial_size](const auto& row) {
+                    if (row.size() != initial_size)
+                      same_size = false;
+                  });
+    if (!same_size)
+      return QVector<QVector<QString>>();
+  }
+
   return data;
 }
 }
