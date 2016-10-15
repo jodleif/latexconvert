@@ -2,6 +2,7 @@
 #include <QVector>
 #include <algorithm>
 #include <cassert>
+#include <functional>
 
 void
 TableModel::reserve_data()
@@ -81,6 +82,12 @@ QVector<QVector<QString>>
 TableModel::get_grid_data() const
 {
   return grid_data;
+}
+
+const QVector<QVector<QString>>&
+TableModel::get_c_grid_data() const
+{
+  return std::cref(grid_data);
 }
 /**
  * @brief addColumn add one extra column for each row.

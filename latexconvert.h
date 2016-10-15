@@ -1,7 +1,7 @@
 #ifndef LATEXCONVERT_H
 #define LATEXCONVERT_H
 
-#include "tablemodel.h"
+#include "model/tablemodel.h"
 #include <QMainWindow>
 #include <QTableView>
 #include <memory>
@@ -28,6 +28,8 @@ private slots:
   void on_remove_row_button_clicked();
 
   void on_remove_column_button_clicked();
+
+  void on_generate_latex_button_clicked();
 
 private:
   void add_new_data_model(std::pair<int, int> rowcol,

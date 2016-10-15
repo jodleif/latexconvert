@@ -23,6 +23,7 @@ public:
                int role = Qt::EditRole);
   Qt::ItemFlags flags(const QModelIndex& index) const;
   QVector<QVector<QString>> get_grid_data() const;
+  const QVector<QVector<QString>>& get_c_grid_data() const;
 
 private:
   int rows;
