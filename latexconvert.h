@@ -29,7 +29,9 @@ private slots:
 
   void on_generate_latex_button_clicked();
 
-  void on_pushButton_clicked();
+  void on_from_clipboard_button_clicked();
+
+  void on_swap_row_col_button_clicked();
 
 private:
   void add_new_data_model(std::pair<int, int> rowcol,

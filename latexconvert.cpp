@@ -1,4 +1,5 @@
 #include "latexconvert.h"
+#include "cpp11-range/range.hpp"
 #include "latex/formatfromclipboard.h"
 #include "latex/latexcreator.h"
 #include "model/configoptions.h"
@@ -53,6 +54,21 @@ set_model_data(QStandardItemModel* model, QVector<QVector<QString>> data)
   }
   return true;
 }
+
+QVector<QVector<QString>>
+rotate_data(QStandardItemModel* model)
+{
+  using util::lang::indices;
+  std::pair<int, int> dimensions{ model->columnCount(), model->rowCount() };
+  auto new_data = latex::provision_datastruct(dimensions);
+  auto old_data = get_model_data(model);
+  for (auto i : indices(old_data)) {
+    for (auto j : indices(old_data[i])) {
+      new_data[j][i] = old_data[i][j];
+    }
+  }
+  return new_data;
+}
 }
 LatexConvert::~LatexConvert()
 {
@@ -105,9 +121,16 @@ LatexConvert::on_generate_latex_button_clicked()
 }
 
 void
-LatexConvert::on_pushButton_clicked()
+LatexConvert::on_from_clipboard_button_clicked()
 {
   const auto* clipboard = QApplication::clipboard();
   auto data = latex::grab_and_format_clipboard(clipboard);
-  bool res = set_model_data(itemmodel, data);
+  set_model_data(itemmodel, data);
+}
+
+void
+LatexConvert::on_swap_row_col_button_clicked()
+{
+  auto data = rotate_data(itemmodel);
+  set_model_data(itemmodel, data);
 }
