@@ -19,8 +19,6 @@ public:
   ~LatexConvert();
 
 private slots:
-  void on_pushButton_clicked();
-
   void on_add_column_button_clicked();
 
   void on_add_row_button_clicked();
@@ -30,6 +28,8 @@ private slots:
   void on_remove_column_button_clicked();
 
   void on_generate_latex_button_clicked();
+
+  void on_pushButton_clicked();
 
 private:
   void add_new_data_model(std::pair<int, int> rowcol,

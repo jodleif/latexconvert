@@ -1,7 +1,9 @@
 #include "latexconvert.h"
+#include "latex/formatfromclipboard.h"
 #include "latex/latexcreator.h"
 #include "model/configoptions.h"
 #include "ui_latexconvert.h"
+#include <QClipboard>
 #include <QTextEdit>
 #include <functional>
 #include <utility>
@@ -20,20 +22,10 @@ LatexConvert::LatexConvert(QWidget* parent)
 namespace {
 
 QVector<QVector<QString>>
-provision_datastruct(std::pair<int, int> dimensions)
-{
-  QVector<QVector<QString>> res(dimensions.first);
-  int columns{ dimensions.second };
-  std::for_each(res.begin(), res.end(),
-                [columns](auto& vec) { vec = QVector<QString>(columns); });
-  return res;
-}
-
-QVector<QVector<QString>>
 get_model_data(QStandardItemModel* model)
 {
   std::pair<int, int> dimensions{ model->rowCount(), model->columnCount() };
-  auto data = provision_datastruct(dimensions);
+  auto data = latex::provision_datastruct(dimensions);
   for (int i{ 0 }; i < dimensions.first; i++) {
     for (int j{ 0 }; j < dimensions.second; j++) {
       auto idx = model->index(i, j);
@@ -43,16 +35,28 @@ get_model_data(QStandardItemModel* model)
     }
   }
   return data;
-};
+}
+bool
+set_model_data(QStandardItemModel* model, QVector<QVector<QString>> data)
+{
+  if (data.size() == 0)
+    return false;
+  if (data[0].size() == 0)
+    return false;
+  model->setRowCount(data.size());
+  model->setColumnCount(data[0].size());
+  for (int i{ 0 }; i < model->rowCount(); i++) {
+    for (int j{ 0 }; j < model->columnCount(); j++) {
+      auto idx = model->index(i, j);
+      model->setData(idx, data[i][j]);
+    }
+  }
+  return true;
+}
 }
 LatexConvert::~LatexConvert()
 {
   delete ui;
-}
-
-void
-LatexConvert::on_pushButton_clicked()
-{
 }
 
 void
@@ -86,9 +90,24 @@ LatexConvert::on_remove_column_button_clicked()
 void
 LatexConvert::on_generate_latex_button_clicked()
 {
+
   auto data = get_model_data(itemmodel);
-  auto config = latex::generate_config_options(data.size(), data[0].size(),
-                                               latex::RowType::CENTER_LINES);
-  auto latex = latex::create_latex_from_grid_data(data, config);
-  ui->textEdit->setPlainText(latex::flatten_latex(latex));
+  if (data.size() > 0) {
+    auto config = latex::generate_config_options(data.size(), data[0].size(),
+                                                 latex::RowType::CENTER_LINES);
+    auto latex =
+      latex::flatten_latex(latex::create_latex_from_grid_data(data, config));
+    ui->textEdit->setPlainText(latex);
+    // TODO: Add checkbox for this
+    auto* clipboard = QApplication::clipboard();
+    clipboard->setText(latex);
+  }
+}
+
+void
+LatexConvert::on_pushButton_clicked()
+{
+  const auto* clipboard = QApplication::clipboard();
+  auto data = latex::grab_and_format_clipboard(clipboard);
+  bool res = set_model_data(itemmodel, data);
 }

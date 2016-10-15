@@ -53,9 +53,9 @@ latex::create_latex_from_grid_data(const QVector<QVector<QString>>& grid_data,
     QString table_row;
     std::for_each(columns.begin(), columns.end() - 1,
                   [&table_row](const auto& cell) {
-                    table_row.append(QString("%1 &").arg(cell));
+                    table_row.append(QString(" %1 &").arg(cell));
                   });
-    table_row.append(QString("%1 ").arg(columns.last()));
+    table_row.append(QString(" %1 ").arg(columns.last()));
     table_row.append("\\\\");
     return table_row;
   };
@@ -77,5 +77,15 @@ latex::flatten_latex(const QVector<QString>& generated_latex)
                   res.append(line);
                   res.append('\n');
                 });
+  return res;
+}
+
+QVector<QVector<QString>>
+latex::provision_datastruct(std::pair<int, int> dimensions)
+{
+  QVector<QVector<QString>> res(dimensions.first);
+  int columns{ dimensions.second };
+  std::for_each(res.begin(), res.end(),
+                [columns](auto& vec) { vec = QVector<QString>(columns); });
   return res;
 }
