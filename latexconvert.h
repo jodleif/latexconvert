@@ -1,10 +1,12 @@
 #ifndef LATEXCONVERT_H
 #define LATEXCONVERT_H
 
+#include "GSL/gsl/gsl"
 #include <QMainWindow>
 #include <QStandardItemModel>
 #include <QTableView>
-#include <memory>
+
+using gsl::not_null;
 
 namespace Ui {
 class LatexConvert;
@@ -37,8 +39,7 @@ private:
   void add_new_data_model(std::pair<int, int> rowcol,
                           QVector<QVector<QString>>&& grid_data);
   Ui::LatexConvert* ui;
-  QTableView* tableview;
-  QStandardItemModel* itemmodel;
+  not_null<QStandardItemModel*> itemmodel;
 };
 
 #endif // LATEXCONVERT_H

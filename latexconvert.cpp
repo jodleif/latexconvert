@@ -6,8 +6,13 @@
 #include "ui_latexconvert.h"
 #include <QClipboard>
 #include <QTextEdit>
+#include <experimental/optional>
 #include <functional>
 #include <utility>
+#include <QDialog>
+
+using util::lang::indices;
+using util::lang::range;
 
 LatexConvert::LatexConvert(QWidget* parent)
   : QMainWindow(parent)
@@ -15,10 +20,9 @@ LatexConvert::LatexConvert(QWidget* parent)
   , itemmodel(new QStandardItemModel(this))
 {
   ui->setupUi(this);
-  tableview = ui->tableView;
   itemmodel->setColumnCount(5);
   itemmodel->setRowCount(5);
-  tableview->setModel(itemmodel);
+  ui->tableView->setModel(itemmodel);
 }
 namespace {
 
@@ -27,12 +31,13 @@ get_model_data(QStandardItemModel* model)
 {
   std::pair<int, int> dimensions{ model->rowCount(), model->columnCount() };
   auto data = latex::provision_datastruct(dimensions);
-  for (int i{ 0 }; i < dimensions.first; i++) {
-    for (int j{ 0 }; j < dimensions.second; j++) {
+
+  for (int i : range(0, dimensions.first)) {
+    for (int j : range(0, dimensions.second)) {
       auto idx = model->index(i, j);
       QString cell = (model->data(idx)).toString();
 
-      data[i][j] = cell;
+      data[i][j] = std::move(cell);
     }
   }
   return data;
@@ -44,14 +49,17 @@ set_model_data(QStandardItemModel* model, QVector<QVector<QString>> data)
     return false;
   if (data[0].size() == 0)
     return false;
+
   model->setRowCount(data.size());
   model->setColumnCount(data[0].size());
-  for (int i{ 0 }; i < model->rowCount(); i++) {
-    for (int j{ 0 }; j < model->columnCount(); j++) {
+
+  for (auto i : indices(data)) {
+    for (int j : indices(data[0])) {
       auto idx = model->index(i, j);
       model->setData(idx, data[i][j]);
     }
   }
+
   return true;
 }
 
@@ -124,8 +132,18 @@ void
 LatexConvert::on_from_clipboard_button_clicked()
 {
   const auto* clipboard = QApplication::clipboard();
-  auto data = latex::grab_and_format_clipboard(clipboard);
-  set_model_data(itemmodel, data);
+
+  if (clipboard != nullptr) {
+
+    auto data =
+      latex::grab_and_format_clipboard(not_null<const QClipboard*>(clipboard));
+    if (data)
+      set_model_data(itemmodel, *data);
+    else {
+      QDialog message(this);
+      message.
+    }
+  }
 }
 
 void

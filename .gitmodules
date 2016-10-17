@@ -1,3 +1,6 @@
 [submodule "cpp11-range"]
 	path = cpp11-range
 	url = https://github.com/klmr/cpp11-range.git
+[submodule "GSL"]
+	path = GSL
+	url = https://github.com/Microsoft/GSL.git
