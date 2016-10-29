@@ -5,7 +5,7 @@
 #include "model/configoptions.h"
 #include "ui_latexconvert.h"
 #include <QClipboard>
-#include <QDialog>
+#include <QMessageBox>
 #include <QTextEdit>
 #include <experimental/optional>
 #include <functional>
@@ -78,7 +78,17 @@ rotate_data(QStandardItemModel* model)
   }
   return new_data;
 }
+
+void
+show_error_dialog(const QString message)
+{
+  QMessageBox error_dialog;
+  error_dialog.setText(message);
+  error_dialog.setIcon(QMessageBox::Warning);
+  error_dialog.exec();
 }
+
+} // anon namespace end
 LatexConvert::~LatexConvert()
 {
   delete ui;
@@ -135,14 +145,12 @@ LatexConvert::on_from_clipboard_button_clicked()
   const auto* clipboard = QApplication::clipboard();
 
   if (clipboard != nullptr) {
-
-    auto data =
+    auto data = // std::optional
       latex::grab_and_format_clipboard(not_null<const QClipboard*>(clipboard));
     if (data)
       set_model_data(itemmodel, *data);
     else {
-      QDialog message(this);
-      message.setToolTip("");
+      show_error_dialog("Could not load clipboard data. The clipboard is empty, or the data has an invalid format.");
     }
   }
 }
