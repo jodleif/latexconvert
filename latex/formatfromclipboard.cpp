@@ -20,7 +20,8 @@ generate_table_data(const QMimeData* mimedata)
   auto columnsplitter = QRegExp("[ \t]");
   auto clipboard_contents = mimedata->text();
 
-  QStringList lines = clipboard_contents.split('\n');
+  QStringList lines =
+    clipboard_contents.split('\n', QString::SplitBehavior::SkipEmptyParts);
   QVector<QVector<QString>> data(lines.size());
 
   for (auto i : indices(data)) {
@@ -30,8 +31,9 @@ generate_table_data(const QMimeData* mimedata)
       data[i][j] = cells[j];
     }
     // return empty if dimensions unequal
-    if (data[i].size() != data[0].size())
+    if (data[i].size() != data[0].size()) {
       return {};
+    }
   }
 
   return data;

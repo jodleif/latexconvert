@@ -5,11 +5,11 @@
 #include "model/configoptions.h"
 #include "ui_latexconvert.h"
 #include <QClipboard>
+#include <QDialog>
 #include <QTextEdit>
 #include <experimental/optional>
 #include <functional>
 #include <utility>
-#include <QDialog>
 
 using util::lang::indices;
 using util::lang::range;
@@ -70,6 +70,7 @@ rotate_data(QStandardItemModel* model)
   std::pair<int, int> dimensions{ model->columnCount(), model->rowCount() };
   auto new_data = latex::provision_datastruct(dimensions);
   auto old_data = get_model_data(model);
+
   for (auto i : indices(old_data)) {
     for (auto j : indices(old_data[i])) {
       new_data[j][i] = old_data[i][j];
@@ -141,7 +142,7 @@ LatexConvert::on_from_clipboard_button_clicked()
       set_model_data(itemmodel, *data);
     else {
       QDialog message(this);
-      message.
+      message.setToolTip("");
     }
   }
 }
