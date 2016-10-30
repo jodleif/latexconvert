@@ -41,12 +41,11 @@ generate_table_data(const QMimeData* mimedata)
 }
 
 opt_tabledata
-latex::grab_and_format_clipboard(not_null<const QClipboard*> clipboard)
+latex::grab_and_format_clipboard(not_null<const QMimeData*> clipboard)
 {
-  const auto* mimedata = clipboard->mimeData();
-  if (mimedata->hasText()) {
-    qDebug() << mimedata->text();
-    return generate_table_data(mimedata);
+  if (clipboard->hasText()) {
+    qDebug() << clipboard->text();
+    return generate_table_data(clipboard);
   }
   return {};
 }

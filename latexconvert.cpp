@@ -7,6 +7,7 @@
 #include <QCheckBox>
 #include <QClipboard>
 #include <QMessageBox>
+#include <QMimeData>
 #include <QTextEdit>
 #include <experimental/optional>
 #include <functional>
@@ -81,14 +82,35 @@ rotate_data(QStandardItemModel* model)
 }
 
 void
-show_error_dialog(const QString message)
+show_error_dialog(const QString message, const QString detailed_error = "")
 {
   QMessageBox error_dialog;
   error_dialog.setText(message);
   error_dialog.setIcon(QMessageBox::Warning);
+  if (detailed_error.size() != 0) {
+    error_dialog.setDetailedText(detailed_error);
+  }
   error_dialog.exec();
 }
 
+const QMimeData*
+get_clipboard_contents()
+{
+  const auto* clipboard = QApplication::clipboard();
+  return clipboard->mimeData();
+}
+
+void
+handle_clipboard_error(not_null<const QMimeData*> clipboard)
+{
+  if (clipboard->hasText()) {
+    show_error_dialog(
+      "Could not load clipboard data. Clipboard contents below (show details)",
+      clipboard->text());
+  } else {
+    show_error_dialog("Clipboard has no text!");
+  }
+}
 } // anon namespace end
 LatexConvert::~LatexConvert()
 {
@@ -146,16 +168,16 @@ LatexConvert::on_generate_latex_button_clicked()
 void
 LatexConvert::on_from_clipboard_button_clicked()
 {
-  const auto* clipboard = QApplication::clipboard();
+  auto clipboard = get_clipboard_contents(); // QMimeData
 
   if (clipboard != nullptr) {
+    auto non_null_clipboard = not_null<const QMimeData*>(clipboard);
     auto data = // std::optional
-      latex::grab_and_format_clipboard(not_null<const QClipboard*>(clipboard));
+      latex::grab_and_format_clipboard(non_null_clipboard);
     if (data)
       set_model_data(itemmodel, *data);
     else {
-      show_error_dialog("Could not load clipboard data. The clipboard is "
-                        "empty, or the data has an invalid format.");
+      handle_clipboard_error(non_null_clipboard);
     }
   }
 }
