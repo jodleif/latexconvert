@@ -4,6 +4,7 @@
 #include "latex/latexcreator.h"
 #include "model/configoptions.h"
 #include "ui_latexconvert.h"
+#include <QCheckBox>
 #include <QClipboard>
 #include <QMessageBox>
 #include <QTextEdit>
@@ -133,9 +134,12 @@ LatexConvert::on_generate_latex_button_clicked()
     auto latex =
       latex::flatten_latex(latex::create_latex_from_grid_data(data, config));
     ui->textEdit->setPlainText(latex);
-    // TODO: Add checkbox for this
-    auto* clipboard = QApplication::clipboard();
-    clipboard->setText(latex);
+
+    auto copy_to_clipboard = ui->clipboardCopy->isChecked();
+    if (copy_to_clipboard) {
+      auto* clipboard = QApplication::clipboard();
+      clipboard->setText(latex);
+    }
   }
 }
 
@@ -150,7 +154,8 @@ LatexConvert::on_from_clipboard_button_clicked()
     if (data)
       set_model_data(itemmodel, *data);
     else {
-      show_error_dialog("Could not load clipboard data. The clipboard is empty, or the data has an invalid format.");
+      show_error_dialog("Could not load clipboard data. The clipboard is "
+                        "empty, or the data has an invalid format.");
     }
   }
 }
